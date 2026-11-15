@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import '../data/profile_store.dart';
 import '../l10n/app_localizations.dart';
 import '../models/profile.dart';
+import '../sharing/payload.dart';
 import '../sharing/share_item.dart';
 import 'edit_profile_screen.dart';
 import 'item_visuals.dart';
+import 'share_screen.dart';
 import 'style.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -37,8 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _share() {
+    final items = ShareItem.values.where(_selected.contains).toList();
     Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => const Placeholder()),
+      MaterialPageRoute<void>(
+        builder: (_) => ShareScreen(payload: buildPayload(_profile, _selected), items: items),
+      ),
     );
   }
 

@@ -1,6 +1,9 @@
 import 'package:dijital_kartvizit/app.dart';
 import 'package:dijital_kartvizit/models/profile.dart';
+import 'package:dijital_kartvizit/sharing/share_item.dart';
+import 'package:dijital_kartvizit/ui/share_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers.dart';
@@ -55,6 +58,25 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Ali Veli'), findsOneWidget);
     expect(find.text('GitHub'), findsOneWidget);
+  });
+
+  testWidgets('share opens share screen with the selected payload', (tester) async {
+    const channel = MethodChannel('kartvizit/hce');
+    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(channel, (call) async => call.method == 'status' ? 'ready' : null);
+    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+
+    await pumpApp(tester, const Profile(fullName: 'Ali Veli', instagram: 'ali', github: 'ali'));
+    await tester.ensureVisible(find.text('GitHub'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('GitHub'));
+    await tester.pump();
+    await tester.tap(find.text('Paylaş (1)'));
+    await tester.pumpAndSettle();
+
+    final share = tester.widget<ShareScreen>(find.byType(ShareScreen));
+    expect(share.payload.qrText, 'https://github.com/ali');
+    expect(share.items, [ShareItem.github]);
   });
 
   testWidgets('english fallback for non-turkish device', (tester) async {
