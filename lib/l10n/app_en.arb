@@ -1,0 +1,36 @@
+{
+  "@@locale": "en",
+  "appTitle": "Business Card",
+  "editProfile": "Edit profile",
+  "emptyProfile": "Add your details to create your card",
+  "createProfile": "Create profile",
+  "shareCount": "Share ({count})",
+  "@shareCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "itemContact": "Add to contacts",
+  "itemWebsite": "Website",
+  "itemLocation": "Location",
+  "fieldFullName": "Full name",
+  "fieldTitle": "Title",
+  "fieldCompany": "Company",
+  "fieldPhone": "Phone",
+  "fieldEmail": "Email",
+  "fieldWebsite": "Website",
+  "fieldInstagram": "Instagram username",
+  "fieldGithub": "GitHub username",
+  "fieldLinkedin": "LinkedIn username",
+  "fieldX": "X username",
+  "fieldAddress": "Address",
+  "requiredField": "Required",
+  "save": "Save",
+  "changePhoto": "Change photo",
+  "shareTitle": "Share",
+  "scanHint": "Scan the QR code with the camera",
+  "nfcReady": "Hold the other phone to the back of yours",
+  "nfcDisabled": "NFC is off",
+  "nfcOpenSettings": "Turn on NFC",
+  "nfcUnsupported": "This phone can't share over NFC, use the QR code"
+}
