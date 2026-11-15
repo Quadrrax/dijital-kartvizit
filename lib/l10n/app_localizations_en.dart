@@ -51,21 +51,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldEmail => 'Email';
 
   @override
-  String get fieldWebsite => 'Website';
-
-  @override
-  String get fieldInstagram => 'Instagram username';
-
-  @override
-  String get fieldGithub => 'GitHub username';
-
-  @override
-  String get fieldLinkedin => 'LinkedIn username';
-
-  @override
-  String get fieldX => 'X username';
-
-  @override
   String get fieldAddress => 'Address';
 
   @override
@@ -95,4 +80,59 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get nfcUnsupported =>
       'This phone can\'t share over NFC, use the QR code';
+
+  @override
+  String get cardName => 'Card name';
+
+  @override
+  String get cardNameHint => 'e.g. Personal, Work';
+
+  @override
+  String get defaultCardName => 'My card';
+
+  @override
+  String get newCard => 'New card';
+
+  @override
+  String get deleteCard => 'Delete card';
+
+  @override
+  String get deleteCardConfirm => 'Delete this card? This cannot be undone.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get contactDetails => 'Contact details';
+
+  @override
+  String get accounts => 'Accounts';
+
+  @override
+  String get addAccount => 'Add account';
+
+  @override
+  String get noAccounts =>
+      'No accounts yet. You can add several on the same platform.';
+
+  @override
+  String get accountLabel => 'Label (optional, e.g. Work)';
+
+  @override
+  String get valueUsername => 'Username';
+
+  @override
+  String get valuePhone => 'Phone number';
+
+  @override
+  String get valueUrl => 'Web address';
+
+  @override
+  String get removeAccount => 'Remove account';
+
+  @override
+  String get pickToShare => 'Choose what to share';
 }

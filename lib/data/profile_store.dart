@@ -6,16 +6,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/profile.dart';
 
-/// Keeps the profile on the phone: JSON in shared_preferences, photo as a
-/// file in the app's documents directory.
+/// Keeps the cards on the phone: JSON list in shared_preferences, photos as
+/// files in the app's documents directory.
 class ProfileStore {
   ProfileStore(this._prefs, this._photoDir);
 
-  static const _key = 'profile';
-  static const _photoPrefix = 'profile_';
+  static const _key = 'profiles';
+  static const _legacyKey = 'profile';
+  static const _activeKey = 'activeProfile';
 
   final SharedPreferences _prefs;
   final Directory _photoDir;
+  int _idCounter = 0;
 
   static Future<ProfileStore> open() async {
     return ProfileStore(
@@ -24,32 +26,55 @@ class ProfileStore {
     );
   }
 
-  Profile load() {
-    final raw = _prefs.getString(_key);
-    if (raw == null) return Profile.empty;
+  String newId() => '${DateTime.now().microsecondsSinceEpoch}_${_idCounter++}';
+
+  List<Profile> loadAll() {
     try {
-      return Profile.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      final raw = _prefs.getString(_key);
+      if (raw != null) {
+        return [
+          for (final p in jsonDecode(raw) as List) Profile.fromJson(p as Map<String, dynamic>),
+        ];
+      }
+      final legacy = _prefs.getString(_legacyKey);
+      if (legacy != null) {
+        return [Profile.fromJson(jsonDecode(legacy) as Map<String, dynamic>).copyWith(id: newId())];
+      }
     } on FormatException {
-      return Profile.empty;
+      // fall through
     } on TypeError {
-      return Profile.empty;
+      // fall through
     }
+    return [];
   }
 
-  Future<void> save(Profile p) => _prefs.setString(_key, jsonEncode(p.toJson()));
+  Future<void> saveAll(List<Profile> profiles) =>
+      _prefs.setString(_key, jsonEncode([for (final p in profiles) p.toJson()]));
 
-  /// Copies the picked image into the app's own directory under a fresh
-  /// name (so Flutter's image cache never shows the old photo) and removes
-  /// earlier copies.
-  Future<String> importPhoto(String sourcePath) async {
+  String? get activeId => _prefs.getString(_activeKey);
+
+  Future<void> setActiveId(String id) => _prefs.setString(_activeKey, id);
+
+  /// Copies the picked image into the app's own directory under a fresh name
+  /// (so Flutter's image cache never shows the old photo) and removes this
+  /// profile's earlier copies.
+  Future<String> importPhoto(String sourcePath, String profileId) async {
+    final prefix = 'profile_${profileId}_';
     final dot = sourcePath.lastIndexOf('.');
     final ext = dot > sourcePath.lastIndexOf('/') ? sourcePath.substring(dot) : '';
-    final name = '$_photoPrefix${DateTime.now().millisecondsSinceEpoch}$ext';
+    final name = '$prefix${DateTime.now().millisecondsSinceEpoch}$ext';
     final copy = await File(sourcePath).copy('${_photoDir.path}/$name');
     for (final f in _photoDir.listSync().whereType<File>()) {
       final base = f.uri.pathSegments.last;
-      if (base.startsWith(_photoPrefix) && base != name) f.deleteSync();
+      if (base.startsWith(prefix) && base != name) f.deleteSync();
     }
     return copy.path;
+  }
+
+  /// Removes every photo file belonging to [profileId].
+  void deletePhotos(String profileId) {
+    for (final f in _photoDir.listSync().whereType<File>()) {
+      if (f.uri.pathSegments.last.startsWith('profile_${profileId}_')) f.deleteSync();
+    }
   }
 }

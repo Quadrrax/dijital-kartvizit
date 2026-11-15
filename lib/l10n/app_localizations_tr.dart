@@ -51,21 +51,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get fieldEmail => 'E-posta';
 
   @override
-  String get fieldWebsite => 'Web sitesi';
-
-  @override
-  String get fieldInstagram => 'Instagram kullanıcı adı';
-
-  @override
-  String get fieldGithub => 'GitHub kullanıcı adı';
-
-  @override
-  String get fieldLinkedin => 'LinkedIn kullanıcı adı';
-
-  @override
-  String get fieldX => 'X kullanıcı adı';
-
-  @override
   String get fieldAddress => 'Adres';
 
   @override
@@ -95,4 +80,59 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get nfcUnsupported =>
       'Bu telefon NFC ile paylaşamıyor, QR kodu kullan';
+
+  @override
+  String get cardName => 'Kart adı';
+
+  @override
+  String get cardNameHint => 'ör. Kişisel, İş';
+
+  @override
+  String get defaultCardName => 'Kartım';
+
+  @override
+  String get newCard => 'Yeni kart';
+
+  @override
+  String get deleteCard => 'Kartı sil';
+
+  @override
+  String get deleteCardConfirm => 'Bu kart silinsin mi? Geri alınamaz.';
+
+  @override
+  String get cancel => 'Vazgeç';
+
+  @override
+  String get delete => 'Sil';
+
+  @override
+  String get contactDetails => 'İletişim bilgileri';
+
+  @override
+  String get accounts => 'Hesaplar';
+
+  @override
+  String get addAccount => 'Hesap ekle';
+
+  @override
+  String get noAccounts =>
+      'Henüz hesap yok. Aynı platformdan birden fazla ekleyebilirsin.';
+
+  @override
+  String get accountLabel => 'Etiket (isteğe bağlı, ör. İş)';
+
+  @override
+  String get valueUsername => 'Kullanıcı adı';
+
+  @override
+  String get valuePhone => 'Telefon numarası';
+
+  @override
+  String get valueUrl => 'Web adresi';
+
+  @override
+  String get removeAccount => 'Hesabı kaldır';
+
+  @override
+  String get pickToShare => 'Paylaşmak istediklerini seç';
 }

@@ -22,42 +22,64 @@ void main() {
     return ProfileStore(await SharedPreferences.getInstance(), dir);
   }
 
-  test('load returns empty profile when nothing saved', () async {
+  test('loadAll is empty when nothing saved', () async {
     final store = await storeWith({});
-    expect(store.load().fullName, '');
+    expect(store.loadAll(), isEmpty);
+    expect(store.activeId, isNull);
   });
 
-  test('save then load returns same profile', () async {
+  test('saveAll then loadAll keeps profiles in order', () async {
     final store = await storeWith({});
-    const p = Profile(fullName: 'Ali Veli', instagram: 'ali', photoPath: '/x.jpg');
-    await store.save(p);
-    expect(store.load().toJson(), p.toJson());
+    await store.saveAll(const [
+      Profile(id: 'a', cardName: 'Kişisel', fullName: 'Ali'),
+      Profile(id: 'b', cardName: 'İş', fullName: 'Ali Veli'),
+    ]);
+    expect(store.loadAll().map((p) => p.id), ['a', 'b']);
   });
 
-  test('corrupt json returns empty profile instead of throwing', () async {
-    final store = await storeWith({'profile': '{bozuk'});
-    expect(store.load().fullName, '');
+  test('active id is remembered', () async {
+    final store = await storeWith({});
+    await store.setActiveId('b');
+    expect(store.activeId, 'b');
   });
 
-  test('json of wrong shape returns empty profile instead of throwing', () async {
-    final store = await storeWith({'profile': jsonEncode([1, 2])});
-    expect(store.load().fullName, '');
+  test('old single profile is migrated with a generated id', () async {
+    final store = await storeWith({
+      'profile': jsonEncode({'fullName': 'Ali', 'instagram': 'ali'}),
+    });
+    final all = store.loadAll();
+    expect(all, hasLength(1));
+    expect(all.single.fullName, 'Ali');
+    expect(all.single.id, isNotEmpty);
+    expect(all.single.accounts.single.type, AccountType.instagram);
   });
 
-  test('importPhoto copies file and deletes previous photo', () async {
-    SharedPreferences.setMockInitialValues({});
+  test('corrupt json returns empty list instead of throwing', () async {
+    expect((await storeWith({'profiles': '{bozuk'})).loadAll(), isEmpty);
+    expect((await storeWith({'profiles': jsonEncode({'a': 1})})).loadAll(), isEmpty);
+    expect((await storeWith({'profile': '{bozuk'})).loadAll(), isEmpty);
+  });
+
+  test('newId gives distinct ids', () async {
+    final store = await storeWith({});
+    expect(store.newId(), isNot(store.newId()));
+  });
+
+  test('importPhoto replaces only the same profile\'s photo', () async {
+    final store = await storeWith({});
     final src = File('${dir.path}/src.jpg')..writeAsBytesSync([1, 2, 3]);
     final photoDir = Directory('${dir.path}/photos')..createSync();
     final photoStore = ProfileStore(await SharedPreferences.getInstance(), photoDir);
 
-    final first = await photoStore.importPhoto(src.path);
-    expect(first.startsWith(photoDir.path), isTrue);
-    expect(first.split('/').last.startsWith('profile_'), isTrue);
-    expect(File(first).readAsBytesSync(), [1, 2, 3]);
+    final a1 = await photoStore.importPhoto(src.path, 'a');
+    final b1 = await photoStore.importPhoto(src.path, 'b');
+    expect(File(a1).readAsBytesSync(), [1, 2, 3]);
 
     await Future<void>.delayed(const Duration(milliseconds: 2));
-    final second = await photoStore.importPhoto(src.path);
-    expect(File(second).existsSync(), isTrue);
-    expect(File(first).existsSync(), isFalse);
+    final a2 = await photoStore.importPhoto(src.path, 'a');
+    expect(File(a2).existsSync(), isTrue);
+    expect(File(a1).existsSync(), isFalse);
+    expect(File(b1).existsSync(), isTrue);
+    expect(store, isNotNull);
   });
 }

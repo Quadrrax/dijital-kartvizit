@@ -1,3 +1,4 @@
+import 'package:dijital_kartvizit/models/profile.dart';
 import 'package:dijital_kartvizit/sharing/ndef.dart';
 import 'package:dijital_kartvizit/sharing/payload.dart';
 import 'package:dijital_kartvizit/sharing/share_item.dart';
@@ -32,7 +33,7 @@ void main() {
   });
 
   Future<void> pumpShare(WidgetTester tester) async {
-    await tester.pumpWidget(wrapTr(const ShareScreen(payload: payload, items: [ShareItem.github])));
+    await tester.pumpWidget(wrapTr(const ShareScreen(payload: payload, items: [ShareItem.account(0, Account(type: AccountType.github, value: 'ali'))])));
     await tester.pumpAndSettle();
   }
 
@@ -82,8 +83,8 @@ void main() {
   testWidgets('late dispose of a previous share screen does not stop the new one', (tester) async {
     // The new screen's initState runs before the old screen's dispose, as when
     // the user re-opens Share during the back animation.
-    await tester.pumpWidget(wrapTr(const ShareScreen(key: ValueKey('a'), payload: payload, items: [ShareItem.github])));
-    await tester.pumpWidget(wrapTr(const ShareScreen(key: ValueKey('b'), payload: payload, items: [ShareItem.github])));
+    await tester.pumpWidget(wrapTr(const ShareScreen(key: ValueKey('a'), payload: payload, items: [ShareItem.account(0, Account(type: AccountType.github, value: 'ali'))])));
+    await tester.pumpWidget(wrapTr(const ShareScreen(key: ValueKey('b'), payload: payload, items: [ShareItem.account(0, Account(type: AccountType.github, value: 'ali'))])));
     await tester.pumpAndSettle();
     final methods = calls.map((c) => c.method).toList();
     expect(methods.where((m) => m == 'start'), hasLength(2));

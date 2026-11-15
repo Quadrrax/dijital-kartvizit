@@ -15,11 +15,13 @@ Widget wrapTr(Widget child) => MaterialApp(
       home: child,
     );
 
-/// A store backed by mock prefs and a fresh temp directory, optionally
-/// pre-filled with [p].
-Future<ProfileStore> testStore([Profile? p]) async {
-  SharedPreferences.setMockInitialValues(
-      p == null ? {} : {'profile': jsonEncode(p.toJson())});
+/// A store backed by mock prefs and a fresh temp directory, pre-filled with
+/// [profiles]; the first one is active.
+Future<ProfileStore> testStore([List<Profile> profiles = const []]) async {
+  SharedPreferences.setMockInitialValues({
+    if (profiles.isNotEmpty) 'profiles': jsonEncode([for (final p in profiles) p.toJson()]),
+    if (profiles.isNotEmpty) 'activeProfile': profiles.first.id,
+  });
   final dir = Directory.systemTemp.createTempSync('kartvizit_test');
   return ProfileStore(await SharedPreferences.getInstance(), dir);
 }

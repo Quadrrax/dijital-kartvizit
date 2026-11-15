@@ -22,11 +22,19 @@ final class VCardPayload extends SharePayload {
   String get qrText => vcard;
 }
 
-/// One link item → that link. Contact, or several items → one vCard.
+/// One account or location → its link. Contact, or several items → one vCard.
 SharePayload buildPayload(Profile p, Set<ShareItem> selected) {
   assert(selected.isNotEmpty, 'nothing selected');
-  if (selected.length == 1 && selected.first != ShareItem.contact) {
-    return UriPayload(urlFor(selected.first, p));
+  if (selected.length == 1) {
+    final only = selected.first;
+    switch (only.kind) {
+      case ShareKind.account:
+        return UriPayload(urlFor(only.account!));
+      case ShareKind.location:
+        return UriPayload(locationUrl(p.address));
+      case ShareKind.contact:
+        break;
+    }
   }
   return VCardPayload(buildVCard(p, selected));
 }

@@ -2,18 +2,22 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-const kIndigo = Color(0xFF4F46E5);
-const kPink = Color(0xFFDB2777);
+/// Deep navy used for text on white surfaces.
+const kInk = Color(0xFF0B1A4A);
+
+/// Bright accent on the dark-blue background.
+const kSky = Color(0xFF38BDF8);
 
 const kGradient = LinearGradient(
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
-  colors: [kIndigo, kPink, Color(0xFFF59E0B)],
+  colors: [Color(0xFF050816), Color(0xFF0B1F5C), Color(0xFF1546B8)],
+  stops: [0, 0.55, 1],
 );
 
 /// Translucent white used by cards and tiles on the gradient.
-final kGlassFill = Colors.white.withValues(alpha: 0.18);
-final kGlassBorder = Colors.white.withValues(alpha: 0.30);
+final kGlassFill = Colors.white.withValues(alpha: 0.08);
+final kGlassBorder = Colors.white.withValues(alpha: 0.16);
 
 /// A Scaffold drawn over the app's gradient.
 class GradientScaffold extends StatelessWidget {
@@ -27,11 +31,32 @@ class GradientScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: const BoxDecoration(gradient: kGradient),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: appBar,
-        body: body,
-        bottomNavigationBar: bottomNavigationBar,
+      child: Stack(
+        children: [
+          // Soft glow in the top-right corner for depth.
+          Positioned(
+            top: -120,
+            right: -80,
+            child: IgnorePointer(
+              child: Container(
+                width: 320,
+                height: 320,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [kSky.withValues(alpha: 0.22), kSky.withValues(alpha: 0)],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: appBar,
+            body: body,
+            bottomNavigationBar: bottomNavigationBar,
+          ),
+        ],
       ),
     );
   }
@@ -65,8 +90,35 @@ class GlassCard extends StatelessWidget {
   }
 }
 
+/// Small uppercase heading above a group of controls.
+class SectionTitle extends StatelessWidget {
+  const SectionTitle(this.text, {super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 8, 4, 10),
+      child: Text(
+        text.toUpperCase(),
+        style: TextStyle(
+          color: Colors.white.withValues(alpha: 0.6),
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+}
+
 ThemeData buildTheme() {
-  final scheme = ColorScheme.fromSeed(seedColor: kIndigo, brightness: Brightness.dark);
+  final scheme = ColorScheme.fromSeed(
+    seedColor: const Color(0xFF1546B8),
+    brightness: Brightness.dark,
+    primary: kSky,
+  );
   return ThemeData(
     colorScheme: scheme,
     textTheme: Typography.whiteMountainView,
@@ -74,25 +126,43 @@ ThemeData buildTheme() {
       backgroundColor: Colors.transparent,
       foregroundColor: Colors.white,
       elevation: 0,
+      scrolledUnderElevation: 0,
+      titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         backgroundColor: Colors.white,
-        foregroundColor: kIndigo,
-        disabledBackgroundColor: Colors.white.withValues(alpha: 0.35),
-        disabledForegroundColor: Colors.white,
-        minimumSize: const Size.fromHeight(52),
-        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        foregroundColor: kInk,
+        disabledBackgroundColor: Colors.white.withValues(alpha: 0.18),
+        disabledForegroundColor: Colors.white70,
+        minimumSize: const Size.fromHeight(54),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: Colors.white,
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.35)),
+        minimumSize: const Size.fromHeight(48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Colors.white.withValues(alpha: 0.12),
+      fillColor: Colors.white.withValues(alpha: 0.07),
       labelStyle: const TextStyle(color: Colors.white70),
+      hintStyle: const TextStyle(color: Colors.white38),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide.none,
       ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: kSky, width: 1.5),
+      ),
     ),
+    dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF0E1B45)),
+    popupMenuTheme: const PopupMenuThemeData(color: Color(0xFF0E1B45)),
   );
 }

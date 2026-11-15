@@ -20,7 +20,7 @@ String buildVCard(Profile p, Set<ShareItem> items) {
     'N:${_esc(family)};${_esc(given)};;;',
     'FN:${_esc(name)}',
   ];
-  if (items.contains(ShareItem.contact)) {
+  if (items.contains(const ShareItem.contact())) {
     void add(String prefix, String value, {bool escape = true}) {
       final v = value.trim();
       if (v.isNotEmpty) lines.add('$prefix${escape ? _esc(v) : v}');
@@ -31,12 +31,13 @@ String buildVCard(Profile p, Set<ShareItem> items) {
     add('TEL;TYPE=CELL:', p.phone, escape: false);
     add('EMAIL;TYPE=INTERNET:', p.email, escape: false);
   }
-  if (items.contains(ShareItem.location)) {
+  if (items.contains(const ShareItem.location())) {
     lines.add('ADR;TYPE=WORK:;;${_esc(p.address.trim())};;;;');
   }
-  for (final item in ShareItem.values) {
-    if (item == ShareItem.contact || item == ShareItem.location) continue;
-    if (items.contains(item)) lines.add('URL:${urlFor(item, p)}');
+  final accounts = items.where((i) => i.kind == ShareKind.account).toList()
+    ..sort((a, b) => a.index.compareTo(b.index));
+  for (final item in accounts) {
+    lines.add('URL:${urlFor(item.account!)}');
   }
   lines.add('END:VCARD');
   return '${lines.join('\r\n')}\r\n';

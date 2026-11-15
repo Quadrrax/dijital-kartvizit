@@ -7,7 +7,9 @@
   "shareCount": "Share ({count})",
   "@shareCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "itemContact": "Add to contacts",
@@ -18,11 +20,6 @@
   "fieldCompany": "Company",
   "fieldPhone": "Phone",
   "fieldEmail": "Email",
-  "fieldWebsite": "Website",
-  "fieldInstagram": "Instagram username",
-  "fieldGithub": "GitHub username",
-  "fieldLinkedin": "LinkedIn username",
-  "fieldX": "X username",
   "fieldAddress": "Address",
   "requiredField": "Required",
   "save": "Save",
@@ -32,5 +29,23 @@
   "nfcReady": "Hold the other phone to the back of yours",
   "nfcDisabled": "NFC is off",
   "nfcOpenSettings": "Turn on NFC",
-  "nfcUnsupported": "This phone can't share over NFC, use the QR code"
+  "nfcUnsupported": "This phone can't share over NFC, use the QR code",
+  "cardName": "Card name",
+  "cardNameHint": "e.g. Personal, Work",
+  "defaultCardName": "My card",
+  "newCard": "New card",
+  "deleteCard": "Delete card",
+  "deleteCardConfirm": "Delete this card? This cannot be undone.",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "contactDetails": "Contact details",
+  "accounts": "Accounts",
+  "addAccount": "Add account",
+  "noAccounts": "No accounts yet. You can add several on the same platform.",
+  "accountLabel": "Label (optional, e.g. Work)",
+  "valueUsername": "Username",
+  "valuePhone": "Phone number",
+  "valueUrl": "Web address",
+  "removeAccount": "Remove account",
+  "pickToShare": "Choose what to share"
 }

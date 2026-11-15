@@ -1,34 +1,64 @@
 import '../models/profile.dart';
 
-/// Things the user can share. Declaration order is the order on screen and
-/// in the vCard.
-enum ShareItem { contact, whatsapp, instagram, github, linkedin, x, website, location }
+enum ShareKind { contact, account, location }
 
-String _source(ShareItem item, Profile p) => switch (item) {
-      ShareItem.contact => p.fullName,
-      ShareItem.whatsapp => p.phone,
-      ShareItem.instagram => p.instagram,
-      ShareItem.github => p.github,
-      ShareItem.linkedin => p.linkedin,
-      ShareItem.x => p.x,
-      ShareItem.website => p.website,
-      ShareItem.location => p.address,
-    };
+/// One selectable thing on a card. Accounts are identified by their position
+/// in the profile, so two accounts on the same platform stay distinct.
+class ShareItem {
+  const ShareItem.contact()
+      : kind = ShareKind.contact,
+        index = -1,
+        account = null;
+  const ShareItem.location()
+      : kind = ShareKind.location,
+        index = -1,
+        account = null;
+  const ShareItem.account(this.index, Account this.account) : kind = ShareKind.account;
 
-List<ShareItem> availableItems(Profile p) =>
-    ShareItem.values.where((i) => _source(i, p).trim().isNotEmpty).toList();
+  final ShareKind kind;
+  final int index;
+  final Account? account;
+
+  String get key => kind == ShareKind.account ? 'acc:$index' : kind.name;
+
+  @override
+  bool operator ==(Object other) => other is ShareItem && other.key == key;
+
+  @override
+  int get hashCode => key.hashCode;
+}
+
+/// Contact (needs a name), every filled account in profile order, location.
+List<ShareItem> availableItems(Profile p) => [
+      if (p.fullName.trim().isNotEmpty) const ShareItem.contact(),
+      for (final (i, a) in p.accounts.indexed)
+        if (a.value.trim().isNotEmpty) ShareItem.account(i, a),
+      if (p.address.trim().isNotEmpty) const ShareItem.location(),
+    ];
 
 bool _hasScheme(String s) => s.startsWith('http://') || s.startsWith('https://');
 
-/// [host] matches a pasted link without scheme (e.g. `linkedin.com/in/`),
-/// so it is not doubled when the template is applied.
-String _profileUrl(String base, String raw, RegExp host) {
+final _hosts = {
+  AccountType.instagram: RegExp(r'^(www\.)?instagram\.com/'),
+  AccountType.github: RegExp(r'^(www\.)?github\.com/'),
+  AccountType.linkedin: RegExp(r'^(www\.)?linkedin\.com/in/'),
+  AccountType.x: RegExp(r'^(www\.)?(x|twitter)\.com/'),
+};
+
+const _bases = {
+  AccountType.instagram: 'https://instagram.com/',
+  AccountType.github: 'https://github.com/',
+  AccountType.linkedin: 'https://www.linkedin.com/in/',
+  AccountType.x: 'https://x.com/',
+};
+
+/// Bare username: no '@', no pasted host prefix, no trailing '/'.
+String _handle(AccountType type, String raw) {
   var h = raw.trim();
-  if (_hasScheme(h)) return h;
   if (h.startsWith('@')) h = h.substring(1);
-  h = h.replaceFirst(host, '');
+  h = h.replaceFirst(_hosts[type]!, '');
   if (h.endsWith('/')) h = h.substring(0, h.length - 1);
-  return '$base$h';
+  return h;
 }
 
 String _whatsappDigits(String phone) {
@@ -39,26 +69,41 @@ String _whatsappDigits(String phone) {
   return d;
 }
 
-/// The link a single item opens. [ShareItem.contact] has no link — it is
-/// shared as a vCard.
-String urlFor(ShareItem item, Profile p) {
-  switch (item) {
-    case ShareItem.contact:
-      throw ArgumentError.value(item, 'item', 'contact is shared as a vCard, not a URL');
-    case ShareItem.whatsapp:
-      return 'https://wa.me/${_whatsappDigits(p.phone)}';
-    case ShareItem.instagram:
-      return _profileUrl('https://instagram.com/', p.instagram, RegExp(r'^(www\.)?instagram\.com/'));
-    case ShareItem.github:
-      return _profileUrl('https://github.com/', p.github, RegExp(r'^(www\.)?github\.com/'));
-    case ShareItem.linkedin:
-      return _profileUrl('https://www.linkedin.com/in/', p.linkedin, RegExp(r'^(www\.)?linkedin\.com/in/'));
-    case ShareItem.x:
-      return _profileUrl('https://x.com/', p.x, RegExp(r'^(www\.)?(x|twitter)\.com/'));
-    case ShareItem.website:
-      final w = p.website.trim();
-      return _hasScheme(w) ? w : 'https://$w';
-    case ShareItem.location:
-      return 'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(p.address.trim())}';
+/// The https link an account opens. Phones open these links in the platform's
+/// app when it is installed, otherwise in the browser.
+String urlFor(Account a) {
+  final v = a.value.trim();
+  switch (a.type) {
+    case AccountType.whatsapp:
+      return 'https://wa.me/${_whatsappDigits(v)}';
+    case AccountType.website:
+      return _hasScheme(v) ? v : 'https://$v';
+    case AccountType.instagram:
+    case AccountType.github:
+    case AccountType.linkedin:
+    case AccountType.x:
+      return _hasScheme(v) ? v : '${_bases[a.type]}${_handle(a.type, v)}';
+  }
+}
+
+String locationUrl(String address) =>
+    'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address.trim())}';
+
+/// Short text shown under an account tile.
+String accountHandle(Account a) {
+  final v = a.value.trim();
+  switch (a.type) {
+    case AccountType.whatsapp:
+      return v;
+    case AccountType.website:
+      var w = v.replaceFirst(RegExp(r'^https?://'), '');
+      if (w.endsWith('/')) w = w.substring(0, w.length - 1);
+      return w;
+    case AccountType.instagram:
+    case AccountType.github:
+    case AccountType.linkedin:
+    case AccountType.x:
+      final h = _hasScheme(v) ? _handle(a.type, v.replaceFirst(RegExp(r'^https?://'), '')) : _handle(a.type, v);
+      return '@$h';
   }
 }

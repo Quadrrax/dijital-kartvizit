@@ -75,10 +75,10 @@ class _ShareScreenState extends State<ShareScreen> {
                 children: [
                   for (final item in widget.items)
                     Chip(
-                      avatar: Icon(itemIcon(item), size: 16, color: kIndigo),
+                      avatar: Icon(itemIcon(item), size: 16, color: kInk),
                       label: Text(itemLabel(item, l)),
                       backgroundColor: Colors.white,
-                      labelStyle: const TextStyle(color: kIndigo, fontWeight: FontWeight.w600),
+                      labelStyle: const TextStyle(color: kInk, fontWeight: FontWeight.w600),
                       side: BorderSide.none,
                     ),
                 ],

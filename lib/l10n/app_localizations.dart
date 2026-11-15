@@ -176,36 +176,6 @@ abstract class AppLocalizations {
   /// **'Email'**
   String get fieldEmail;
 
-  /// No description provided for @fieldWebsite.
-  ///
-  /// In en, this message translates to:
-  /// **'Website'**
-  String get fieldWebsite;
-
-  /// No description provided for @fieldInstagram.
-  ///
-  /// In en, this message translates to:
-  /// **'Instagram username'**
-  String get fieldInstagram;
-
-  /// No description provided for @fieldGithub.
-  ///
-  /// In en, this message translates to:
-  /// **'GitHub username'**
-  String get fieldGithub;
-
-  /// No description provided for @fieldLinkedin.
-  ///
-  /// In en, this message translates to:
-  /// **'LinkedIn username'**
-  String get fieldLinkedin;
-
-  /// No description provided for @fieldX.
-  ///
-  /// In en, this message translates to:
-  /// **'X username'**
-  String get fieldX;
-
   /// No description provided for @fieldAddress.
   ///
   /// In en, this message translates to:
@@ -265,6 +235,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This phone can\'t share over NFC, use the QR code'**
   String get nfcUnsupported;
+
+  /// No description provided for @cardName.
+  ///
+  /// In en, this message translates to:
+  /// **'Card name'**
+  String get cardName;
+
+  /// No description provided for @cardNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Personal, Work'**
+  String get cardNameHint;
+
+  /// No description provided for @defaultCardName.
+  ///
+  /// In en, this message translates to:
+  /// **'My card'**
+  String get defaultCardName;
+
+  /// No description provided for @newCard.
+  ///
+  /// In en, this message translates to:
+  /// **'New card'**
+  String get newCard;
+
+  /// No description provided for @deleteCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete card'**
+  String get deleteCard;
+
+  /// No description provided for @deleteCardConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this card? This cannot be undone.'**
+  String get deleteCardConfirm;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @contactDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact details'**
+  String get contactDetails;
+
+  /// No description provided for @accounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts'**
+  String get accounts;
+
+  /// No description provided for @addAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Add account'**
+  String get addAccount;
+
+  /// No description provided for @noAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'No accounts yet. You can add several on the same platform.'**
+  String get noAccounts;
+
+  /// No description provided for @accountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Label (optional, e.g. Work)'**
+  String get accountLabel;
+
+  /// No description provided for @valueUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get valueUsername;
+
+  /// No description provided for @valuePhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get valuePhone;
+
+  /// No description provided for @valueUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Web address'**
+  String get valueUrl;
+
+  /// No description provided for @removeAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove account'**
+  String get removeAccount;
+
+  /// No description provided for @pickToShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what to share'**
+  String get pickToShare;
 }
 
 class _AppLocalizationsDelegate
