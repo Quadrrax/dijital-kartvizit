@@ -79,6 +79,18 @@ void main() {
     expect(find.text('Diğer telefonu telefonunun arkasına yaklaştır'), findsOneWidget);
   });
 
+  testWidgets('late dispose of a previous share screen does not stop the new one', (tester) async {
+    // The new screen's initState runs before the old screen's dispose, as when
+    // the user re-opens Share during the back animation.
+    await tester.pumpWidget(wrapTr(const ShareScreen(key: ValueKey('a'), payload: payload, items: [ShareItem.github])));
+    await tester.pumpWidget(wrapTr(const ShareScreen(key: ValueKey('b'), payload: payload, items: [ShareItem.github])));
+    await tester.pumpAndSettle();
+    final methods = calls.map((c) => c.method).toList();
+    expect(methods.where((m) => m == 'start'), hasLength(2));
+    expect(methods.lastIndexOf('stop'), lessThan(methods.lastIndexOf('start')));
+    await tester.pumpWidget(const SizedBox()); // close 'b' inside this test
+  });
+
   testWidgets('stops hce on dispose', (tester) async {
     await pumpShare(tester);
     expect(calls.map((c) => c.method), isNot(contains('stop')));

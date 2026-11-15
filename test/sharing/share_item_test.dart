@@ -34,6 +34,20 @@ void main() {
     expect(urlFor(ShareItem.x, const Profile(x: '@ali')), 'https://x.com/ali');
   });
 
+  test('profile links typed without scheme are not doubled', () {
+    for (final raw in ['instagram.com/ali', 'www.instagram.com/ali/']) {
+      expect(urlFor(ShareItem.instagram, Profile(instagram: raw)), 'https://instagram.com/ali');
+    }
+    expect(urlFor(ShareItem.github, const Profile(github: 'github.com/ali')), 'https://github.com/ali');
+    expect(urlFor(ShareItem.linkedin, const Profile(linkedin: 'linkedin.com/in/ali')),
+        'https://www.linkedin.com/in/ali');
+    expect(urlFor(ShareItem.linkedin, const Profile(linkedin: 'www.linkedin.com/in/ali/')),
+        'https://www.linkedin.com/in/ali');
+    for (final raw in ['x.com/ali', 'twitter.com/ali']) {
+      expect(urlFor(ShareItem.x, Profile(x: raw)), 'https://x.com/ali');
+    }
+  });
+
   test('website gets https when scheme missing', () {
     expect(urlFor(ShareItem.website, const Profile(website: 'ali.dev')), 'https://ali.dev');
     expect(urlFor(ShareItem.website, const Profile(website: 'http://ali.dev')), 'http://ali.dev');

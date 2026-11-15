@@ -14,7 +14,14 @@ class MainActivity : FlutterActivity() {
     private val adapter: NfcAdapter? by lazy { NfcAdapter.getDefaultAdapter(this) }
     private val service by lazy { ComponentName(this, NdefHceService::class.java) }
 
-    private fun cardEmulation(): CardEmulation? = adapter?.let { CardEmulation.getInstance(it) }
+    private val hasHce: Boolean by lazy {
+        packageManager.hasSystemFeature(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION)
+    }
+
+    // CardEmulation.getInstance throws on devices with NFC but without HCE.
+    private val cardEmulation: CardEmulation? by lazy {
+        adapter?.takeIf { hasHce }?.let { CardEmulation.getInstance(it) }
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -23,13 +30,13 @@ class MainActivity : FlutterActivity() {
                 when (call.method) {
                     "status" -> result.success(status())
                     "start" -> {
-                        HceState.tag.ndefMessage = call.arguments as ByteArray
-                        cardEmulation()?.setPreferredService(this, service)
+                        HceState.session.start(call.arguments as ByteArray)
+                        cardEmulation?.setPreferredService(this, service)
                         result.success(null)
                     }
                     "stop" -> {
-                        HceState.tag.ndefMessage = null
-                        cardEmulation()?.unsetPreferredService(this)
+                        HceState.session.stop()
+                        cardEmulation?.unsetPreferredService(this)
                         result.success(null)
                     }
                     "openNfcSettings" -> {
@@ -44,20 +51,29 @@ class MainActivity : FlutterActivity() {
     private fun status(): String {
         val a = adapter
         return when {
-            a == null || !packageManager.hasSystemFeature(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION) -> "unsupported"
+            a == null || !hasHce -> "unsupported"
             !a.isEnabled -> "disabled"
             else -> "ready"
         }
     }
 
-    // Android wants the preferred service set while resumed and cleared on pause.
+    // Share only while the app is in front: pause hides the tag, resume brings it
+    // back. Android also wants the preferred service set/cleared here.
     override fun onResume() {
         super.onResume()
-        if (HceState.tag.ndefMessage != null) cardEmulation()?.setPreferredService(this, service)
+        HceState.session.onResume()
+        if (HceState.session.isSharing) cardEmulation?.setPreferredService(this, service)
     }
 
     override fun onPause() {
-        cardEmulation()?.unsetPreferredService(this)
+        HceState.session.onPause()
+        cardEmulation?.unsetPreferredService(this)
         super.onPause()
+    }
+
+    // The Flutter UI (and its share screen) goes away with the activity.
+    override fun onDestroy() {
+        HceState.session.stop()
+        super.onDestroy()
     }
 }

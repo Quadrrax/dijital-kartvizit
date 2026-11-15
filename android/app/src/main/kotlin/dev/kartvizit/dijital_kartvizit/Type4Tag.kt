@@ -58,7 +58,8 @@ class Type4Tag {
     }
 }
 
-/** Shared between MainActivity (sets the message) and NdefHceService (serves it). */
+/** Shared between MainActivity (controls the session) and NdefHceService (serves the tag). */
 object HceState {
     val tag = Type4Tag()
+    val session = HceSession(tag)
 }

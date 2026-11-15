@@ -27,12 +27,19 @@ class ShareScreen extends StatefulWidget {
 }
 
 class _ShareScreenState extends State<ShareScreen> {
+  /// Bumped by every new share screen. A screen that is disposed late (e.g.
+  /// after its back animation, when a newer one is already open) must not
+  /// stop the newer screen's sharing.
+  static int _latest = 0;
+
+  late final int _id;
   NfcStatus? _status;
   late final AppLifecycleListener _lifecycle;
 
   @override
   void initState() {
     super.initState();
+    _id = ++_latest;
     widget.hce.start(encodeNdef(widget.payload));
     _refreshStatus();
     // Coming back from the NFC settings page: NFC may be on now.
@@ -47,7 +54,7 @@ class _ShareScreenState extends State<ShareScreen> {
   @override
   void dispose() {
     _lifecycle.dispose();
-    widget.hce.stop();
+    if (_id == _latest) widget.hce.stop();
     super.dispose();
   }
 

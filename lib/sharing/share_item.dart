@@ -20,10 +20,13 @@ List<ShareItem> availableItems(Profile p) =>
 
 bool _hasScheme(String s) => s.startsWith('http://') || s.startsWith('https://');
 
-String _profileUrl(String base, String raw) {
+/// [host] matches a pasted link without scheme (e.g. `linkedin.com/in/`),
+/// so it is not doubled when the template is applied.
+String _profileUrl(String base, String raw, RegExp host) {
   var h = raw.trim();
   if (_hasScheme(h)) return h;
   if (h.startsWith('@')) h = h.substring(1);
+  h = h.replaceFirst(host, '');
   if (h.endsWith('/')) h = h.substring(0, h.length - 1);
   return '$base$h';
 }
@@ -45,13 +48,13 @@ String urlFor(ShareItem item, Profile p) {
     case ShareItem.whatsapp:
       return 'https://wa.me/${_whatsappDigits(p.phone)}';
     case ShareItem.instagram:
-      return _profileUrl('https://instagram.com/', p.instagram);
+      return _profileUrl('https://instagram.com/', p.instagram, RegExp(r'^(www\.)?instagram\.com/'));
     case ShareItem.github:
-      return _profileUrl('https://github.com/', p.github);
+      return _profileUrl('https://github.com/', p.github, RegExp(r'^(www\.)?github\.com/'));
     case ShareItem.linkedin:
-      return _profileUrl('https://www.linkedin.com/in/', p.linkedin);
+      return _profileUrl('https://www.linkedin.com/in/', p.linkedin, RegExp(r'^(www\.)?linkedin\.com/in/'));
     case ShareItem.x:
-      return _profileUrl('https://x.com/', p.x);
+      return _profileUrl('https://x.com/', p.x, RegExp(r'^(www\.)?(x|twitter)\.com/'));
     case ShareItem.website:
       final w = p.website.trim();
       return _hasScheme(w) ? w : 'https://$w';
