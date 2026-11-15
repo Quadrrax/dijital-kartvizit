@@ -6,6 +6,7 @@ import '../data/profile_store.dart';
 import '../l10n/app_localizations.dart';
 import '../models/profile.dart';
 import '../sharing/share_item.dart';
+import 'edit_profile_screen.dart';
 import 'item_visuals.dart';
 import 'style.dart';
 
@@ -24,7 +25,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _edit() async {
     await Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => const Placeholder()),
+      MaterialPageRoute<void>(
+        builder: (_) => EditProfileScreen(store: widget.store, initial: _profile),
+      ),
     );
     if (!mounted) return;
     setState(() {

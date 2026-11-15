@@ -45,6 +45,18 @@ void main() {
     expect(find.text('Paylaş (1)'), findsOneWidget);
   });
 
+  testWidgets('create profile flow shows the card after saving', (tester) async {
+    await pumpApp(tester, Profile.empty);
+    await tester.tap(find.text('Profili oluştur'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('field_fullName')), 'Ali Veli');
+    await tester.enterText(find.byKey(const Key('field_github')), 'ali');
+    await tester.tap(find.text('Kaydet'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ali Veli'), findsOneWidget);
+    expect(find.text('GitHub'), findsOneWidget);
+  });
+
   testWidgets('english fallback for non-turkish device', (tester) async {
     await pumpApp(tester, const Profile(fullName: 'Ali Veli'), locale: const Locale('de'));
     expect(find.text('Add to contacts'), findsOneWidget);
