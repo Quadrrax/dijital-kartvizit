@@ -90,7 +90,7 @@ class GlassCard extends StatelessWidget {
   }
 }
 
-/// Small uppercase heading above a group of controls.
+/// Small heading above a group of controls.
 class SectionTitle extends StatelessWidget {
   const SectionTitle(this.text, {super.key});
 
@@ -101,12 +101,12 @@ class SectionTitle extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 8, 4, 10),
       child: Text(
-        text.toUpperCase(),
+        text,
         style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.6),
-          fontSize: 12,
+          color: Colors.white.withValues(alpha: 0.65),
+          fontSize: 13,
           fontWeight: FontWeight.w700,
-          letterSpacing: 1.2,
+          letterSpacing: 0.4,
         ),
       ),
     );
